@@ -414,6 +414,22 @@ def fut_sensitivityMKTminus(cpn, term, yield_, period=2, begin=None, settle=None
         return None
     return round((mdur) * 0.001, 6)/conv_factor
 
+def fut_tail(A_FUT_DV01, A_MULT, B_FUT_DV01, B_MULT):
+    return (-1 *
+        (((A_FUT_DV01 * A_MULT) - (B_FUT_DV01 * B_MULT)) / (B_FUT_DV01 * B_MULT))
+        if (A_FUT_DV01 * A_MULT) > (B_FUT_DV01 * B_MULT)
+        else (((B_FUT_DV01 * B_MULT) - (A_FUT_DV01 * A_MULT)) / (A_FUT_DV01 * A_MULT))
+    )
+
+def fwd_fut_tail(A_FUT_DV01, A_FWD_DV01, A_MULT, B_FUT_DV01, B_FWD_DV01, B_MULT):
+    return (-1 *
+        ((((A_FUT_DV01+A_FWD_DV01) * A_MULT) - ((B_FUT_DV01+B_FWD_DV01) * B_MULT)) /
+                ((B_FUT_DV01+B_FWD_DV01) * B_MULT))
+        if (A_FUT_DV01 * A_MULT) > (B_FUT_DV01 * B_MULT)
+        else ((((B_FUT_DV01+B_FWD_DV01) * B_MULT) - ((A_FUT_DV01+A_FWD_DV01) * A_MULT)) /
+                ((A_FUT_DV01+A_FWD_DV01) * A_MULT))
+    )
+
 def calculate_ytm(market_price, face_value, coupon_rate, time_to_maturity, periods_per_year=2, n_digits=4):
     market_price = market_price / 100.0 * face_value
     coupon_rate = coupon_rate / 100.0
