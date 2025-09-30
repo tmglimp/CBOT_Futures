@@ -1,4 +1,7 @@
-# CBOT_Futures
-HJM forward rate tree template. FRED volatility lookup. CF derivations. Tails duration overlay.
+# CBOT_Futures Fundamental Analysis Tools
+2-Factor HJM forward rate tree template.
+FRED volatility lookup. 
+Spot dirty CF derivation. 
+Tails duration overlay calculator.
 
-Requires API keys from FRED and the Treasury.
+Volatility lookup requires an API key from FRED, while dirty CF requires an API key from the Treasury.
