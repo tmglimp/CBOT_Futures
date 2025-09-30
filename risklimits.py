@@ -23,20 +23,6 @@ logging.basicConfig(
 # Ignore insecure error messages
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-def solve_tails_hedge(row):
-    row["D_ratio"] = row['A_FUT_DV01']/row['B_FUT_DV01']
-    print("Delta ratio as", row["D_ratio"])
-    row['A_FUT_TL'] = round((
-        (float(config.leg_delta) * float(row['B_FUT_MULTIPLIER'])/1000 * abs(row['B_Q_Value']) * float(row['B_FUT_DV01'])
-         - float(row['A_FUT_MULTIPLIER'])/1000 * abs(row['A_Q_Value']) * float(row['A_FUT_DV01']))
-        / float(row['A_FUT_DV01'])), 3)
-
-    row['B_FUT_TL'] = round((
-        (float(row['A_FUT_MULTIPLIER'])/1000 * abs(row['A_Q_Value']) * float(row['A_FUT_DV01']))
-        / (float(config.leg_delta) * float(row['B_FUT_DV01']))
-        - (float(row['B_FUT_MULTIPLIER'])/1000 * abs(row['B_Q_Value']))), 3)
-
-
 
 def compute_risk_metrics(ORDERS):
     print("Starting risk metrics computation...")
@@ -79,25 +65,6 @@ def compute_risk_metrics(ORDERS):
        # back_DVMKT = row['B_FUT_DVMKT']
        # back_dVMKT_minus = row['B_FUT_DVMKT_MINUS']
         gross_pos_impl_notional = (front_multiplier * front_contract_value * abs(front_ratio) + back_multiplier * back_contract_value * abs(back_ratio))
-
-        # DERIVE DELTA65 TL RATIOS W/ SOLVER
-        orders_df.at[idx, 'B_FUT_TL'], orders_df.at[idx, 'A_FUT_TL'] = solve_tails_hedge(row)
-        front_tl = row["A_FUT_TL"]
-        back_tl = row["B_FUT_TL"]
-        front_basis = int(row["A_NetBasis"])
-        back_basis  = int(row["B_NetBasis"])
-        if front_basis < back_basis:
-            tail = back_tl
-            tail_ratio = back_ratio
-            tail_multiplier = back_multiplier
-            tail_dv01 = back_dv01
-            tail_dv01_minus = back_dv01_minus
-        else:
-            tail = front_tl
-            tail_ratio = front_ratio
-            tail_multiplier = front_multiplier
-            tail_dv01 = front_dv01
-            tail_dv01_minus = front_dv01_minus
 
         ## DOLLAR OVERLAY FOR 2BP/2BP CHANGE (WHAT HAPPENS IF YIELDS CHANGE 2BP/2BP?)
         SEN22 = round((front_dv22 * front_contract_value * front_ratio * front_multiplier + back_dv22 * back_contract_value * back_ratio * back_multiplier), 7)
