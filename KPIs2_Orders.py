@@ -49,18 +49,18 @@ def sia_net_basis(gross_basis, carry):
     return gross_basis + carry
 
 def fut_tail(A_FUT_DV01, A_MULT, B_FUT_DV01, B_MULT):
-    return (
+    return (-1 *
         (((A_FUT_DV01 * A_MULT) - (B_FUT_DV01 * B_MULT)) / (B_FUT_DV01 * B_MULT))
         if (A_FUT_DV01 * A_MULT) > (B_FUT_DV01 * B_MULT)
-        else -1 * (((B_FUT_DV01 * B_MULT) - (A_FUT_DV01 * A_MULT)) / (A_FUT_DV01 * A_MULT))
+        else (((B_FUT_DV01 * B_MULT) - (A_FUT_DV01 * A_MULT)) / (A_FUT_DV01 * A_MULT))
     )
 
 def fwd_fut_tail(A_FUT_DV01, A_FWD_DV01, A_MULT, B_FUT_DV01, B_FWD_DV01, B_MULT):
-    return (
+    return (-1 *
         ((((A_FUT_DV01+A_FWD_DV01) * A_MULT) - ((B_FUT_DV01+B_FWD_DV01) * B_MULT)) /
                 ((B_FUT_DV01+B_FWD_DV01) * B_MULT))
         if (A_FUT_DV01 * A_MULT) > (B_FUT_DV01 * B_MULT)
-        else -1 * ((((B_FUT_DV01+B_FWD_DV01) * B_MULT) - ((A_FUT_DV01+A_FWD_DV01) * A_MULT)) /
+        else ((((B_FUT_DV01+B_FWD_DV01) * B_MULT) - ((A_FUT_DV01+A_FWD_DV01) * A_MULT)) /
                 ((A_FUT_DV01+A_FWD_DV01) * A_MULT))
     )
 
