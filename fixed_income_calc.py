@@ -1,15 +1,13 @@
 """
 fixed_income_calc.py
 """
-
 import pandas as pd
 from math import pow
 from config import mvol
 from datetime import datetime, timedelta
-
 """
 SIA/FIA spot dirty formulas for:
- - Spot dirty no-arbitrage prices at market yield (BPrice, TPrice)
+ - No-arbitrage prices at market yield (BPrice, TPrice)
  - Accrued interest (AInt)
  - Modified duration (MDur)
  - Macaulay duration (MacDur)
