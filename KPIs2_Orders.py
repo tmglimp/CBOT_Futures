@@ -4,12 +4,12 @@ KPIs2_Orders
 import json
 import logging
 import math
-from datetime import datetime
 import numpy as np
 import pandas as pd
 import requests
 import urllib3
 import config
+from datetime import datetime
 from config import updated_ORDERS
 from leaky_bucket import leaky_bucket
 from risklimits import compute_risk_metrics
@@ -102,20 +102,6 @@ def filter_updated_orders(HEDGES_Combos: pd.DataFrame) -> pd.DataFrame:
 
     return HEDGES_Combos[mask].copy()
 
-def get_acct_dets():
-    url = f"{config.IBKR_BASE_URL}/v1/api/iserver/account/pnl/partitioned"
-    leaky_bucket.wait_for_token()
-    print(f'Requesting from {url}')
-    pnl_res = requests.get(url=url, verify=False)
-    print(f'Response from {url}: {pnl_res.status_code}')
-    if pnl_res.headers.get("Content-Type", "").startswith("application/json"):
-        print(json.dumps(pnl_res.json(), indent=2))
-    else:
-        print(pnl_res.text)
-    pnl_json = pnl_res.json()
-    acct_key = f"{config.IBKR_ACCT_ID}.Core"
-    nl_value = pnl_json.get("upnl", {}).get(acct_key, {}).get("nl")
-    return nl_value
 
 def calculate_quantities_with_sma(HEDGES_Combos):
     today = pd.to_datetime(datetime.now())
@@ -197,8 +183,6 @@ def calculate_quantities(HEDGES_Combos):
         A = unique_rows.iloc[0]
         B = unique_rows.iloc[1]
         C = unique_rows.iloc[2]
-        D = unique_rows.iloc[3]
-        E = unique_rows.iloc[4]
 
     else:
         # Assign defaults or replicate the last row enough times to have 3 rows.
@@ -207,8 +191,6 @@ def calculate_quantities(HEDGES_Combos):
         A = unique_rows.iloc[0] if len(unique_rows) > 0 else default
         B = unique_rows.iloc[1] if len(unique_rows) > 1 else default
         C = unique_rows.iloc[2] if len(unique_rows) > 2 else default
-        D = unique_rows.iloc[3] if len(unique_rows) > 3 else default
-        E = unique_rows.iloc[4] if len(unique_rows) > 4 else default
 
     unique_rows2 = HEDGES_Combos.sort_values(by='val_vol', ascending=False)
 
@@ -216,8 +198,6 @@ def calculate_quantities(HEDGES_Combos):
         F = unique_rows2.iloc[0]
         G = unique_rows2.iloc[1]
         H = unique_rows2.iloc[2]
-        I = unique_rows2.iloc[3]
-        J = unique_rows2.iloc[4]
 
     else:
         # Assign defaults or replicate the last row enough times to have 3 rows.
@@ -226,10 +206,8 @@ def calculate_quantities(HEDGES_Combos):
         F = unique_rows2.iloc[0] if len(unique_rows2) > 0 else default
         G = unique_rows2.iloc[1] if len(unique_rows2) > 1 else default
         H = unique_rows2.iloc[2] if len(unique_rows2) > 2 else default
-        I = unique_rows2.iloc[3] if len(unique_rows2) > 3 else default
-        J = unique_rows2.iloc[4] if len(unique_rows2) > 4 else default
 
-    config.ORDERS = pd.DataFrame([A,B,C,D,E,F,G,H,I,J], columns=HEDGES_Combos.columns)
+    config.ORDERS = pd.DataFrame([A,B,C,F,G,H], columns=HEDGES_Combos.columns)
     config.ORDERS.to_csv('config.ORDERS.csv')
 
     # call risklimits here
