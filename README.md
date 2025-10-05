@@ -1,6 +1,9 @@
-# CBOT_Futures Fundamental Analysis Tools
+# CBOT_Futures 
+Quantitative Analysis Tools:
 2-Factor HJM forward rate tree template.
 FRED volatility lookup. 
+
+Risk Mgmt:
 Spot dirty CF derivation. 
 Duration, convexity, and basis overlay tail calculator.
 
