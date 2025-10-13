@@ -30,17 +30,6 @@ def calculate_term(settlement_date_str, maturity_date_str, day_count_convention=
     term_in_years = days_to_maturity / day_count_convention
     return term_in_years
 
-def settlement_date(trade_date, t_plus=1):
-    if isinstance(trade_date, str):
-        trade_date = datetime.strptime(trade_date, '%Y%m%d')
-    settlement_date = trade_date
-    business_days_added = 0
-    while business_days_added < t_plus:
-        settlement_date += timedelta(days=1)
-        if settlement_date.weekday() < 5:  # Monday=0, ..., Friday=4
-            business_days_added += 1
-    return settlement_date.strftime('%Y%m%d')
-
 def accrual_period(begin, settle, next_coupon, day_count=1):
     if day_count == 1:
         L = datetime.strptime(str(begin), '%Y%m%d')
