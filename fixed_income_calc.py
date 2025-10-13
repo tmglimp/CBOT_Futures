@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 """
 SIA/FIA spot dirty formulas for:
  - No-arbitrage prices at market yield (BPrice, TPrice)
- - Accrued interest (AInt)
+ - Accrued interest (aint)
  - Modified duration (MDur)
  - Macaulay duration (MacDur)
  - DV01 (PVBP)
@@ -30,7 +30,7 @@ def calculate_term(settlement_date_str, maturity_date_str, day_count_convention=
     term_in_years = days_to_maturity / day_count_convention
     return term_in_years
 
-def compute_settlement_date(trade_date, t_plus=1):
+def settlement_date(trade_date, t_plus=1):
     if isinstance(trade_date, str):
         trade_date = datetime.strptime(trade_date, '%Y%m%d')
     settlement_date = trade_date
@@ -53,7 +53,7 @@ def accrual_period(begin, settle, next_coupon, day_count=1):
         S = [int(settle[:4]), int(settle[4:6]), int(settle[6:8])]
         return (360 * (S[0] - L[0]) + 30 * (S[1] - L[1]) + S[2] - L[2]) / 180
 
-def AInt(cpn, period=2, begin=None, settle=None, next_coupon=None, day_count=1):
+def aint(cpn, period=2, begin=None, settle=None, next_coupon=None, day_count=1):
     v = accrual_period(begin, settle, next_coupon, day_count)
     return cpn / period * v
 
@@ -74,7 +74,7 @@ def BPrice(cpn, term, yield_, period=2, begin=None, settle=None, next_coupon=Non
         price = None
 
     if begin and settle and next_coupon:
-        ai = AInt(cpn, period=2, begin=begin, settle=settle, next_coupon=next_coupon, day_count=day_count)
+        ai = aint(cpn, period=2, begin=begin, settle=settle, next_coupon=next_coupon, day_count=day_count)
         price = price + ai
     return price
 
@@ -95,7 +95,7 @@ def TPrice(cpn, term, yield_, period=2, begin=None, settle=None, next_coupon=Non
         price = None
 
     if begin and settle and next_coupon:
-        ai = AInt(cpn, period=2, begin=begin, settle=settle, next_coupon=next_coupon, day_count=day_count)
+        ai = aint(cpn, period=2, begin=begin, settle=settle, next_coupon=next_coupon, day_count=day_count)
         price = price + ai
     return price/conv_factor
 
