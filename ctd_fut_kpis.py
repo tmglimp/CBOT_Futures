@@ -4,6 +4,7 @@ CTD and FUT KPIs
 
 import itertools
 import pandas as pd
+import datetime
 from config import HEDGES
 from fixed_income_calc import BPrice,MDur,MacDur,Cvx,DV01,fut_DV01,fut_DV10,fut_DV50,fut_DV100, \
     fut_DV01minus,fut_DV10minus,fut_DV50minus,fut_DV100minus,fut_sensitivity22,fut_sensitivity22minus, \
@@ -18,12 +19,15 @@ def run_fixed_income_calculation(HEDGES):
 
     period = 2
     day_count = 1
+    today = datetime.today()
+    formatted = today.strftime("%m%d%y")
 
     HEDGES['CTD_BPRICE'] = HEDGES.apply(lambda row: BPrice(cpn=row['CTD_COUPON'],
                            term=row['CTD_YTM'],
                            yield_=row['CTD_YIELD'],
                            period=period,
                            begin=row['CTD_PREV_COUPON'],
+                           settle=formatted,
                            next_coupon=row['CTD_NEXT_COUPON'],
                            day_count=day_count), axis=1)
 
@@ -32,6 +36,7 @@ def run_fixed_income_calculation(HEDGES):
                                                            yield_=row['CTD_YIELD'],
                                                            period=period,
                                                            begin=row['CTD_PREV_COUPON'],
+                                                           settle=formatted,
                                                            next_coupon=row['CTD_NEXT_COUPON'],
                                                            day_count=day_count,
                                                            conv_factor=row["CTD_CF"]), axis=1)
@@ -41,6 +46,7 @@ def run_fixed_income_calculation(HEDGES):
                          yield_=row['CTD_YIELD'],
                          period=period,
                          begin=row['CTD_PREV_COUPON'],
+                         settle=formatted,
                          next_coupon=row['CTD_NEXT_COUPON'],
                          day_count=day_count), axis=1)
 
@@ -49,6 +55,7 @@ def run_fixed_income_calculation(HEDGES):
                            yield_=row['CTD_YIELD'],
                            period=period,
                            begin=row['CTD_PREV_COUPON'],
+                           settle=formatted,
                            next_coupon=row['CTD_NEXT_COUPON'],
                            day_count=day_count), axis=1)
 
@@ -57,6 +64,7 @@ def run_fixed_income_calculation(HEDGES):
                                                      yield_=row['CTD_YIELD'],
                                                      period=period,
                                                      begin=row['CTD_PREV_COUPON'],
+                                                     settle=formatted,
                                                      next_coupon=row['CTD_NEXT_COUPON'],
                                                      day_count=day_count,), axis=1)
 
@@ -65,6 +73,7 @@ def run_fixed_income_calculation(HEDGES):
                                                      yield_=row['CTD_YIELD'],
                                                      period=period,
                                                      begin=row['CTD_PREV_COUPON'],
+                                                     settle=formatted,
                                                      next_coupon=row['CTD_NEXT_COUPON'],
                                                      day_count=day_count,
                                                      conv_factor=row["CTD_CF"]), axis=1)
@@ -74,6 +83,7 @@ def run_fixed_income_calculation(HEDGES):
                                                            yield_=row['CTD_YIELD'],
                                                            period=period,
                                                            begin=row['CTD_PREV_COUPON'],
+                                                           settle=formatted,
                                                            next_coupon=row['CTD_NEXT_COUPON'],
                                                            day_count=day_count,
                                                            conv_factor=row["CTD_CF"]), axis=1)
@@ -83,6 +93,7 @@ def run_fixed_income_calculation(HEDGES):
                          yield_=row['CTD_YIELD'],
                          period=period,
                          begin=row['CTD_PREV_COUPON'],
+                         settle=formatted,
                          next_coupon=row['CTD_NEXT_COUPON'],
                          day_count=day_count,
                          conv_factor=row["CTD_CF"]), axis=1)
@@ -92,6 +103,7 @@ def run_fixed_income_calculation(HEDGES):
                                                        yield_=row['CTD_YIELD'],
                                                        period=period,
                                                        begin=row['CTD_PREV_COUPON'],
+                                                       settle=formatted,
                                                        next_coupon=row['CTD_NEXT_COUPON'],
                                                        day_count=day_count,
                                                        conv_factor=row["CTD_CF"]), axis=1)
@@ -102,6 +114,7 @@ def run_fixed_income_calculation(HEDGES):
                          yield_=row['CTD_YIELD'],
                          period=period,
                          begin=row['CTD_PREV_COUPON'],
+                         settle=formatted,
                          next_coupon=row['CTD_NEXT_COUPON'],
                          day_count=day_count,
                          conv_factor=row["CTD_CF"]), axis=1)
@@ -111,6 +124,7 @@ def run_fixed_income_calculation(HEDGES):
                          yield_=row['CTD_YIELD'],
                          period=period,
                          begin=row['CTD_PREV_COUPON'],
+                         settle=formatted,
                          next_coupon=row['CTD_NEXT_COUPON'],
                          day_count=day_count,
                          conv_factor=row["CTD_CF"]), axis=1)
@@ -120,6 +134,7 @@ def run_fixed_income_calculation(HEDGES):
                          yield_=row['CTD_YIELD'],
                          period=period,
                          begin=row['CTD_PREV_COUPON'],
+                         settle=formatted,
                          next_coupon=row['CTD_NEXT_COUPON'],
                          day_count=day_count,
                          conv_factor=row["CTD_CF"]), axis=1)
@@ -129,6 +144,7 @@ def run_fixed_income_calculation(HEDGES):
                          yield_=row['CTD_YIELD'],
                          period=period,
                          begin=row['CTD_PREV_COUPON'],
+                         settle=formatted,
                          next_coupon=row['CTD_NEXT_COUPON'],
                          day_count=day_count,
                          conv_factor=row["CTD_CF"]), axis=1)
@@ -138,6 +154,7 @@ def run_fixed_income_calculation(HEDGES):
                          yield_=row['CTD_YIELD'],
                          period=period,
                          begin=row['CTD_PREV_COUPON'],
+                         settle=formatted,
                          next_coupon=row['CTD_NEXT_COUPON'],
                          day_count=day_count,
                          conv_factor=row["CTD_CF"]), axis=1)
@@ -147,6 +164,7 @@ def run_fixed_income_calculation(HEDGES):
                          yield_=row['CTD_YIELD'],
                          period=period,
                          begin=row['CTD_PREV_COUPON'],
+                         settle=formatted,
                          next_coupon=row['CTD_NEXT_COUPON'],
                          day_count=day_count,
                          conv_factor=row["CTD_CF"]), axis=1)
@@ -156,6 +174,7 @@ def run_fixed_income_calculation(HEDGES):
                           yield_=row['CTD_YIELD'],
                           period=period,
                           begin=row['CTD_PREV_COUPON'],
+                          settle=formatted,
                           next_coupon=row['CTD_NEXT_COUPON'],
                           day_count=day_count,
                           conv_factor=row["CTD_CF"]), axis=1)
@@ -165,6 +184,7 @@ def run_fixed_income_calculation(HEDGES):
                           yield_=row['CTD_YIELD'],
                           period=period,
                           begin=row['CTD_PREV_COUPON'],
+                          settle=formatted,
                           next_coupon=row['CTD_NEXT_COUPON'],
                           day_count=day_count,
                           conv_factor=row["CTD_CF"]), axis=1)
