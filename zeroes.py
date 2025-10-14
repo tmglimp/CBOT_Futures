@@ -163,3 +163,4 @@ def fetch_treasury_data():
 
 if __name__ == "__main__":
     fetch_treasury_data()
+
