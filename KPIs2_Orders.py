@@ -14,10 +14,9 @@ from config import updated_ORDERS
 from leaky_bucket import leaky_bucket
 from risklimits import compute_risk_metrics
 
-# Disable SSL Warnings (for external API requests)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# SIA-Standardized Utility Functions  ## (Amend as needed to work with correct dataframe columns)
+# SIA-Standardized KPI Derivations
 def accrued_interest(coupon, mat_date, today):
     try:
         last_coupon = mat_date.replace(year=today.year)
@@ -101,7 +100,6 @@ def filter_updated_orders(HEDGES_Combos: pd.DataFrame) -> pd.DataFrame:
             (~cond_b_short | b_ok_short))
 
     return HEDGES_Combos[mask].copy()
-
 
 def calculate_quantities_with_sma(HEDGES_Combos):
     today = pd.to_datetime(datetime.now())
