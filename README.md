@@ -1,11 +1,11 @@
 # CBOT_Futures 
 Quantitative Analysis Tools:
-2-Factor HJM forward rate tree template.
+5-Factor HJM forward rate tree.
 FRED volatility lookup. 
 
 Risk Mgmt:
 Spot dirty CF derivation. 
-Duration, convexity, and basis overlay tail calculator.
+Duration, convexity, and basis overlay tail calc.
 
 Volatility.py lookup requires an API key from FRED, which you may obtain here:
 https://fred.stlouisfed.org/docs/api/api_key.html
