@@ -6,8 +6,8 @@ from datetime import datetime
 import config
 
 # ─── Configuration ───
-config.USTAPI_client_id
-config.USTAPI_client_secret
+#config.USTAPI_client_id
+#config.USTAPI_client_secret
 tcf_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "TCF.xlsx")
 output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "UST.index.csv")
 
@@ -89,7 +89,7 @@ def get_coupon_bounds(issueDate, years_to_maturity, original_maturity):
 def query_security_detail(cusip, issue_date):
     url = f"https://api.fiscal.treasury.gov/ap/exp/v1/marketable-securities/securities/{cusip}/{issue_date}"
     headers = { "client_id": config.USTAPI_client_id,
-        "client_secret": config.client_secret,
+        "client_secret": config.USTAPI_client_secret,
         "accept": "application/json"}
 
     response = requests.get(url, headers=headers)
@@ -97,7 +97,7 @@ def query_security_detail(cusip, issue_date):
     return response.json()
 
 # ─── Main Logic ───
-def fetch_treasury_data():
+def derive_cf():
     df = pd.read_excel(tcf_path, sheet_name="Security Database", header=2)
     cols_to_keep = ["OTR Issue", "Original Maturity", "Coupon", "Issue\nDate", "Maturity\nDate", "CUSIP",
         "Adjusted\nIssuance\n(Billions)", "Original Issuance (Billions)"]
@@ -110,30 +110,31 @@ def fetch_treasury_data():
     df = df[df["years_to_maturity"] <= 11].copy()
     df["cusip"] = df["cusip"].astype(str).str.strip()
 
-    results = []
-    for _, row in df.iterrows():
-        cusip = row["cusip"]
-        issue_date_raw = row["issue_date"]
-        issue_date = convert_date_format(issue_date_raw)
-        try:
-            data = query_security_detail(cusip, issue_date)
-            if data:
-                result = data[0] if isinstance(data, list) else data
-                result["cusip"] = cusip
-                result["issue_date"] = issue_date_raw
-                results.append(result)
-        except Exception as e:
-            print(f"Failed for {cusip}/{issue_date}: {e}")
+    #results = []
+    #for _, row in df.iterrows():
+    #    cusip = row["cusip"]
+    #    issue_date_raw = row["issue_date"]
+    #    issue_date = convert_date_format(issue_date_raw)
+    #    try:
+    #        data = query_security_detail(cusip, issue_date)
+    #        if data:
+    #            result = data[0] if isinstance(data, list) else data
+    #            result["cusip"] = cusip
+    #            result["issue_date"] = issue_date_raw
+    #            print(result)
+    #            results.append(result)
+    #    except Exception as e:
+    #            print(f"Failed for {cusip}/{issue_date}: {e}")
 
-    df_results = pd.DataFrame(results)
-    df_parse = df.merge(df_results, on="cusip", how="left")
-    df_parse = df_parse.loc[:, ~df_parse.columns.duplicated()]
-
-    df_parse["issueDate"] = pd.to_datetime(df_parse["issueDate"], errors="coerce")
-    df_parse["issueDate"] = df_parse["issueDate"].dt.strftime("%Y-%m-%d")
+    #df_results = pd.DataFrame(results)
+    #df_parse = df.merge(df_results, on="cusip", how="left")
+    #df_parse = df_parse.loc[:, ~df_parse.columns.duplicated()]
+    df_parse = df
+    df_parse["issue_date"] = pd.to_datetime(df_parse["issue_date"], errors="coerce")
+    df_parse["issue_date"] = df_parse["issue_date"].dt.strftime("%Y-%m-%d")
     df_parse["maturity_date"] = pd.to_datetime(df_parse["maturity_date"], errors="coerce")
     df_parse["maturity_date"] = df_parse["maturity_date"].dt.strftime("%Y-%m-%d")
-    df_parse[["prev_coupon", "next_coupon"]] = df_parse.apply(lambda r: pd.Series(get_coupon_bounds(r["issueDate"], r["years_to_maturity"], r["original_maturity"])),axis=1)
+    df_parse[["prev_coupon", "next_coupon"]] = df_parse.apply(lambda r: pd.Series(get_coupon_bounds(r["issue_date"], r["years_to_maturity"], r["original_maturity"])),axis=1)
     df_parse["conversion_factor"] = df_parse.apply(lambda row: round(compute_cf(row["coupon"], row["prev_coupon"], row["next_coupon"], row["maturity_date"]), 6)
 
         if pd.notna(row["prev_coupon"]) and pd.notna(row["next_coupon"]) else None,axis=1)
@@ -157,10 +158,9 @@ def fetch_treasury_data():
     ]
 
     df_parse.drop(columns=cols_to_drop, inplace=True, errors="ignore")
-    df_parse = df_parse[df_parse['corpusCusip'].notna() & (df_parse['corpusCusip'] != '')]
+    #df_parse = df_parse[df_parse['corpusCusip'].notna() & (df_parse['corpusCusip'] != '')]
     df_parse.to_csv(output_path, index=False)
     print(f"Enriched file written to: {output_path}")
 
 if __name__ == "__main__":
-    fetch_treasury_data()
-
+    derive_cf()

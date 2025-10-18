@@ -19,7 +19,7 @@ url_ext = ("series_id={series_id}"
 
 def fetch_yields_df(series_id: str) -> pd.DataFrame:
     full_url = f"{baseurl}?{url_ext.format(series_id=series_id, fred_key=config.fred_key, start=hundred_one_before_yday.isoformat(), end=yesterday.isoformat())}"
-    resp = requests.get(full_url, timeout=10)
+    resp = requests.get(full_url, timeout=30)
     resp.raise_for_status()
     data = resp.json()
     obs = data.get("observations", [])
@@ -27,7 +27,7 @@ def fetch_yields_df(series_id: str) -> pd.DataFrame:
         (obs_i["date"], float(obs_i["value"]))
         for obs_i in obs
         if obs_i.get("value") not in (".", None, "")
-           ]
+    ]
     df = pd.DataFrame(rows, columns=["date", "yield_pct"])
     if not df.empty:
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
@@ -54,7 +54,7 @@ def yield_log_vol(df: pd.DataFrame, series_id: str) -> tuple[pd.DataFrame, float
     else:
         adj = np.nan
         yields["adj_log_yield"] = adj
-        
+
     return yields, adj
 
 def derive_vol(series_list=None):
@@ -76,4 +76,3 @@ def derive_vol(series_list=None):
 
 if __name__ == "__main__":
     derive_vol()
-

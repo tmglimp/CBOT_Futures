@@ -8,10 +8,10 @@ import config
 import requests
 import pandas as pd
 from datetime import datetime
-from zeroes import fetch_treasury_data
+from zeroes import derive_cf
 
 # ────────────────────────────────────────────────────────────────────────────────
-# Fetch CTD Basket List from CME Group
+#   Fetch CTD Basket List from CME Group
 # ────────────────────────────────────────────────────────────────────────────────
 def download_tcf_file() -> str:
     print("Connecting to CME for TCF.xlsx metadata …")
@@ -38,7 +38,7 @@ def download_tcf_file() -> str:
     return out_path
 
 # ────────────────────────────────────────────────────────────────────────────────
-# Ping Treasury for Detailed SecDef. Derive Spot Dirty CF.
+#   Derive Spot Dirty CF.
 # ────────────────────────────────────────────────────────────────────────────────
 def run_scraper() -> None:
     print("Starting UST Index Generator")
@@ -48,17 +48,17 @@ def run_scraper() -> None:
     tcf_file = download_tcf_file()
 
     # Create USTs.index.csv via your helper
-    print("Running fetch_treasury_data() …")
-    fetch_treasury_data()             # writes USTs.index.csv
+    print("Deriving conversion factor.")
+    derive_cf()             # writes USTs.index.csv
 
     # Load USTs.index.csv
     csv_name = "UST.index.csv"
     if not os.path.exists(csv_name):
-        raise FileNotFoundError(f"Expected {csv_name} produced by fetch_treasury_data()")
+        raise FileNotFoundError(f"Expected {csv_name} produced by conversion factor script.")
 
     ust_df = pd.read_csv(csv_name, dtype=str)
-    if {"cusip", "corpusCusip"} - set(ust_df.columns):
-        raise RuntimeError("CSV missing required 'cusip' or 'corpusCusip' columns")
+    if {"cusip"} - set(ust_df.columns):
+        raise RuntimeError("CSV missing required 'cusip' columns")
 
 
     # Write out enriched index
